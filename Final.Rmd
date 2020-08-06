@@ -1,0 +1,47 @@
+---
+title: "Final"
+author: "Semih Barutcu"
+date: "3/6/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r warning=F, message=F}
+library(pacman)
+
+p_load(mlbench, tidyverse, ggplot2, Amelia, ROCR, caret, randomForest, tictoc, Boruta)
+```
+
+
+```{r}
+data("Ozone")
+
+df <- Ozone %>% select(-V9) %>% na.omit()
+
+idx <- sample(nrow(df), round(0.75*nrow(df)))
+train <- df[idx,]
+test <- df[-idx,]
+
+missmap(train)
+missmap(test)
+```
+
+
+```{r}
+tic()
+set.seed(300)
+m_rf_Boruta <- Boruta(V4 ~ ., data = train, doTrace = 2, ntree = 500)
+toc()
+
+m_rf_Boruta
+
+plot(m_rf_Boruta)
+
+getConfirmedFormula(m_rf_Boruta)
+
+attStats(m_rf_Boruta)
+
+plotImpHistory(m_rf_Boruta)
+```
+
